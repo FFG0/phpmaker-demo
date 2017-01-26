@@ -48,9 +48,9 @@ $EW_FONT_PATH = realpath('./phpfont');
 // Database connection info
 define("EW_CONN_HOST", 'localhost', TRUE);
 define("EW_CONN_PORT", 3306, TRUE);
-define("EW_CONN_USER", 'admin', TRUE);
+define("EW_CONN_USER", 'root', TRUE);
 define("EW_CONN_PASS", 'password', TRUE);
-define("EW_CONN_DB", 'a', TRUE);
+define("EW_CONN_DB", 'A', TRUE);
 
 // Set up database error function
 $EW_ERROR_FN = 'ew_ErrorFn';
