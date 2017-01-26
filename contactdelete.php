@@ -394,6 +394,7 @@ class ccontact_delete extends ccontact {
 		$this->name->setDbValue($rs->fields('name'));
 		$this->lastname->setDbValue($rs->fields('lastname'));
 		$this->status->setDbValue($rs->fields('status'));
+		$this->sex->setDbValue($rs->fields('sex'));
 	}
 
 	// Load DbValue from recordset
@@ -404,6 +405,7 @@ class ccontact_delete extends ccontact {
 		$this->name->DbValue = $row['name'];
 		$this->lastname->DbValue = $row['lastname'];
 		$this->status->DbValue = $row['status'];
+		$this->sex->DbValue = $row['sex'];
 	}
 
 	// Render row values based on field settings
@@ -421,10 +423,12 @@ class ccontact_delete extends ccontact {
 		// name
 		// lastname
 		// status
+		// sex
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
 			// id
+			$this->id->ViewValue = $this->id->CurrentValue;
 			$this->id->ViewCustomAttributes = "";
 
 			// name
@@ -436,8 +440,38 @@ class ccontact_delete extends ccontact {
 			$this->lastname->ViewCustomAttributes = "";
 
 			// status
-			$this->status->ViewValue = $this->status->CurrentValue;
+			if (strval($this->status->CurrentValue) <> "") {
+				switch ($this->status->CurrentValue) {
+					case $this->status->FldTagValue(1):
+						$this->status->ViewValue = $this->status->FldTagCaption(1) <> "" ? $this->status->FldTagCaption(1) : $this->status->CurrentValue;
+						break;
+					case $this->status->FldTagValue(2):
+						$this->status->ViewValue = $this->status->FldTagCaption(2) <> "" ? $this->status->FldTagCaption(2) : $this->status->CurrentValue;
+						break;
+					default:
+						$this->status->ViewValue = $this->status->CurrentValue;
+				}
+			} else {
+				$this->status->ViewValue = NULL;
+			}
 			$this->status->ViewCustomAttributes = "";
+
+			// sex
+			if (strval($this->sex->CurrentValue) <> "") {
+				switch ($this->sex->CurrentValue) {
+					case $this->sex->FldTagValue(1):
+						$this->sex->ViewValue = $this->sex->FldTagCaption(1) <> "" ? $this->sex->FldTagCaption(1) : $this->sex->CurrentValue;
+						break;
+					case $this->sex->FldTagValue(2):
+						$this->sex->ViewValue = $this->sex->FldTagCaption(2) <> "" ? $this->sex->FldTagCaption(2) : $this->sex->CurrentValue;
+						break;
+					default:
+						$this->sex->ViewValue = $this->sex->CurrentValue;
+				}
+			} else {
+				$this->sex->ViewValue = NULL;
+			}
+			$this->sex->ViewCustomAttributes = "";
 
 			// id
 			$this->id->LinkCustomAttributes = "";
@@ -458,6 +492,11 @@ class ccontact_delete extends ccontact {
 			$this->status->LinkCustomAttributes = "";
 			$this->status->HrefValue = "";
 			$this->status->TooltipValue = "";
+
+			// sex
+			$this->sex->LinkCustomAttributes = "";
+			$this->sex->HrefValue = "";
+			$this->sex->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -714,6 +753,9 @@ $contact_delete->ShowMessage();
 <?php if ($contact->status->Visible) { // status ?>
 		<th><span id="elh_contact_status" class="contact_status"><?php echo $contact->status->FldCaption() ?></span></th>
 <?php } ?>
+<?php if ($contact->sex->Visible) { // sex ?>
+		<th><span id="elh_contact_sex" class="contact_sex"><?php echo $contact->sex->FldCaption() ?></span></th>
+<?php } ?>
 	</tr>
 	</thead>
 	<tbody>
@@ -764,6 +806,14 @@ while (!$contact_delete->Recordset->EOF) {
 <span id="el<?php echo $contact_delete->RowCnt ?>_contact_status" class="contact_status">
 <span<?php echo $contact->status->ViewAttributes() ?>>
 <?php echo $contact->status->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($contact->sex->Visible) { // sex ?>
+		<td<?php echo $contact->sex->CellAttributes() ?>>
+<span id="el<?php echo $contact_delete->RowCnt ?>_contact_sex" class="contact_sex">
+<span<?php echo $contact->sex->ViewAttributes() ?>>
+<?php echo $contact->sex->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

@@ -424,6 +424,16 @@
 <field id="lastname"><phrase id="fldcaption" value="lastname"/>
 </field>
 <field id="status"><phrase id="fldcaption" value="status"/>
+<phrase id="fldtagvalue1" value="0"/>
+<phrase id="fldtagcaption1" value="ปิด"/>
+<phrase id="fldtagvalue2" value="1"/>
+<phrase id="fldtagcaption2" value="เปิด"/>
+</field>
+<field id="sex"><phrase id="fldcaption" value="sex"/>
+<phrase id="fldtagvalue1" value="M"/>
+<phrase id="fldtagcaption1" value="M"/>
+<phrase id="fldtagvalue2" value="F"/>
+<phrase id="fldtagcaption2" value="F"/>
 </field>
 </table>
 </project>

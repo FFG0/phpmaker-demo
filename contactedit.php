@@ -422,6 +422,9 @@ class ccontact_edit extends ccontact {
 		if (!$this->status->FldIsDetailKey) {
 			$this->status->setFormValue($objForm->GetValue("x_status"));
 		}
+		if (!$this->sex->FldIsDetailKey) {
+			$this->sex->setFormValue($objForm->GetValue("x_sex"));
+		}
 	}
 
 	// Restore form values
@@ -432,6 +435,7 @@ class ccontact_edit extends ccontact {
 		$this->name->CurrentValue = $this->name->FormValue;
 		$this->lastname->CurrentValue = $this->lastname->FormValue;
 		$this->status->CurrentValue = $this->status->FormValue;
+		$this->sex->CurrentValue = $this->sex->FormValue;
 	}
 
 	// Load row based on key values
@@ -467,6 +471,7 @@ class ccontact_edit extends ccontact {
 		$this->name->setDbValue($rs->fields('name'));
 		$this->lastname->setDbValue($rs->fields('lastname'));
 		$this->status->setDbValue($rs->fields('status'));
+		$this->sex->setDbValue($rs->fields('sex'));
 	}
 
 	// Load DbValue from recordset
@@ -477,6 +482,7 @@ class ccontact_edit extends ccontact {
 		$this->name->DbValue = $row['name'];
 		$this->lastname->DbValue = $row['lastname'];
 		$this->status->DbValue = $row['status'];
+		$this->sex->DbValue = $row['sex'];
 	}
 
 	// Render row values based on field settings
@@ -494,10 +500,12 @@ class ccontact_edit extends ccontact {
 		// name
 		// lastname
 		// status
+		// sex
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
 			// id
+			$this->id->ViewValue = $this->id->CurrentValue;
 			$this->id->ViewCustomAttributes = "";
 
 			// name
@@ -509,8 +517,38 @@ class ccontact_edit extends ccontact {
 			$this->lastname->ViewCustomAttributes = "";
 
 			// status
-			$this->status->ViewValue = $this->status->CurrentValue;
+			if (strval($this->status->CurrentValue) <> "") {
+				switch ($this->status->CurrentValue) {
+					case $this->status->FldTagValue(1):
+						$this->status->ViewValue = $this->status->FldTagCaption(1) <> "" ? $this->status->FldTagCaption(1) : $this->status->CurrentValue;
+						break;
+					case $this->status->FldTagValue(2):
+						$this->status->ViewValue = $this->status->FldTagCaption(2) <> "" ? $this->status->FldTagCaption(2) : $this->status->CurrentValue;
+						break;
+					default:
+						$this->status->ViewValue = $this->status->CurrentValue;
+				}
+			} else {
+				$this->status->ViewValue = NULL;
+			}
 			$this->status->ViewCustomAttributes = "";
+
+			// sex
+			if (strval($this->sex->CurrentValue) <> "") {
+				switch ($this->sex->CurrentValue) {
+					case $this->sex->FldTagValue(1):
+						$this->sex->ViewValue = $this->sex->FldTagCaption(1) <> "" ? $this->sex->FldTagCaption(1) : $this->sex->CurrentValue;
+						break;
+					case $this->sex->FldTagValue(2):
+						$this->sex->ViewValue = $this->sex->FldTagCaption(2) <> "" ? $this->sex->FldTagCaption(2) : $this->sex->CurrentValue;
+						break;
+					default:
+						$this->sex->ViewValue = $this->sex->CurrentValue;
+				}
+			} else {
+				$this->sex->ViewValue = NULL;
+			}
+			$this->sex->ViewCustomAttributes = "";
 
 			// id
 			$this->id->LinkCustomAttributes = "";
@@ -531,11 +569,17 @@ class ccontact_edit extends ccontact {
 			$this->status->LinkCustomAttributes = "";
 			$this->status->HrefValue = "";
 			$this->status->TooltipValue = "";
+
+			// sex
+			$this->sex->LinkCustomAttributes = "";
+			$this->sex->HrefValue = "";
+			$this->sex->TooltipValue = "";
 		} elseif ($this->RowType == EW_ROWTYPE_EDIT) { // Edit row
 
 			// id
 			$this->id->EditAttrs["class"] = "form-control";
 			$this->id->EditCustomAttributes = "";
+			$this->id->EditValue = $this->id->CurrentValue;
 			$this->id->ViewCustomAttributes = "";
 
 			// name
@@ -553,8 +597,20 @@ class ccontact_edit extends ccontact {
 			// status
 			$this->status->EditAttrs["class"] = "form-control";
 			$this->status->EditCustomAttributes = "";
-			$this->status->EditValue = ew_HtmlEncode($this->status->CurrentValue);
-			$this->status->PlaceHolder = ew_RemoveHtml($this->status->FldCaption());
+			$arwrk = array();
+			$arwrk[] = array($this->status->FldTagValue(1), $this->status->FldTagCaption(1) <> "" ? $this->status->FldTagCaption(1) : $this->status->FldTagValue(1));
+			$arwrk[] = array($this->status->FldTagValue(2), $this->status->FldTagCaption(2) <> "" ? $this->status->FldTagCaption(2) : $this->status->FldTagValue(2));
+			array_unshift($arwrk, array("", $Language->Phrase("PleaseSelect")));
+			$this->status->EditValue = $arwrk;
+
+			// sex
+			$this->sex->EditAttrs["class"] = "form-control";
+			$this->sex->EditCustomAttributes = "";
+			$arwrk = array();
+			$arwrk[] = array($this->sex->FldTagValue(1), $this->sex->FldTagCaption(1) <> "" ? $this->sex->FldTagCaption(1) : $this->sex->FldTagValue(1));
+			$arwrk[] = array($this->sex->FldTagValue(2), $this->sex->FldTagCaption(2) <> "" ? $this->sex->FldTagCaption(2) : $this->sex->FldTagValue(2));
+			array_unshift($arwrk, array("", $Language->Phrase("PleaseSelect")));
+			$this->sex->EditValue = $arwrk;
 
 			// Edit refer script
 			// id
@@ -569,6 +625,9 @@ class ccontact_edit extends ccontact {
 
 			// status
 			$this->status->HrefValue = "";
+
+			// sex
+			$this->sex->HrefValue = "";
 		}
 		if ($this->RowType == EW_ROWTYPE_ADD ||
 			$this->RowType == EW_ROWTYPE_EDIT ||
@@ -600,8 +659,8 @@ class ccontact_edit extends ccontact {
 		if (!$this->status->FldIsDetailKey && !is_null($this->status->FormValue) && $this->status->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->status->FldCaption(), $this->status->ReqErrMsg));
 		}
-		if (!ew_CheckInteger($this->status->FormValue)) {
-			ew_AddMessage($gsFormError, $this->status->FldErrMsg());
+		if (!$this->sex->FldIsDetailKey && !is_null($this->sex->FormValue) && $this->sex->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->sex->FldCaption(), $this->sex->ReqErrMsg));
 		}
 
 		// Return validate result
@@ -644,6 +703,9 @@ class ccontact_edit extends ccontact {
 
 			// status
 			$this->status->SetDbValueDef($rsnew, $this->status->CurrentValue, 0, $this->status->ReadOnly);
+
+			// sex
+			$this->sex->SetDbValueDef($rsnew, $this->sex->CurrentValue, 0, $this->sex->ReadOnly);
 
 			// Call Row Updating event
 			$bUpdateRow = $this->Row_Updating($rsold, $rsnew);
@@ -809,9 +871,9 @@ fcontactedit.Validate = function() {
 			elm = this.GetElements("x" + infix + "_status");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $contact->status->FldCaption(), $contact->status->ReqErrMsg)) ?>");
-			elm = this.GetElements("x" + infix + "_status");
-			if (elm && !ew_CheckInteger(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($contact->status->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_sex");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $contact->sex->FldCaption(), $contact->sex->ReqErrMsg)) ?>");
 
 			// Set up row object
 			ew_ElementsToRow(fobj);
@@ -908,9 +970,53 @@ $contact_edit->ShowMessage();
 		<label id="elh_contact_status" for="x_status" class="col-sm-2 control-label ewLabel"><?php echo $contact->status->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="col-sm-10"><div<?php echo $contact->status->CellAttributes() ?>>
 <span id="el_contact_status">
-<input type="text" data-field="x_status" name="x_status" id="x_status" size="30" placeholder="<?php echo ew_HtmlEncode($contact->status->PlaceHolder) ?>" value="<?php echo $contact->status->EditValue ?>"<?php echo $contact->status->EditAttributes() ?>>
+<select data-field="x_status" id="x_status" name="x_status"<?php echo $contact->status->EditAttributes() ?>>
+<?php
+if (is_array($contact->status->EditValue)) {
+	$arwrk = $contact->status->EditValue;
+	$rowswrk = count($arwrk);
+	$emptywrk = TRUE;
+	for ($rowcntwrk = 0; $rowcntwrk < $rowswrk; $rowcntwrk++) {
+		$selwrk = (strval($contact->status->CurrentValue) == strval($arwrk[$rowcntwrk][0])) ? " selected=\"selected\"" : "";
+		if ($selwrk <> "") $emptywrk = FALSE;
+?>
+<option value="<?php echo ew_HtmlEncode($arwrk[$rowcntwrk][0]) ?>"<?php echo $selwrk ?>>
+<?php echo $arwrk[$rowcntwrk][1] ?>
+</option>
+<?php
+	}
+}
+?>
+</select>
 </span>
 <?php echo $contact->status->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($contact->sex->Visible) { // sex ?>
+	<div id="r_sex" class="form-group">
+		<label id="elh_contact_sex" for="x_sex" class="col-sm-2 control-label ewLabel"><?php echo $contact->sex->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
+		<div class="col-sm-10"><div<?php echo $contact->sex->CellAttributes() ?>>
+<span id="el_contact_sex">
+<select data-field="x_sex" id="x_sex" name="x_sex"<?php echo $contact->sex->EditAttributes() ?>>
+<?php
+if (is_array($contact->sex->EditValue)) {
+	$arwrk = $contact->sex->EditValue;
+	$rowswrk = count($arwrk);
+	$emptywrk = TRUE;
+	for ($rowcntwrk = 0; $rowcntwrk < $rowswrk; $rowcntwrk++) {
+		$selwrk = (strval($contact->sex->CurrentValue) == strval($arwrk[$rowcntwrk][0])) ? " selected=\"selected\"" : "";
+		if ($selwrk <> "") $emptywrk = FALSE;
+?>
+<option value="<?php echo ew_HtmlEncode($arwrk[$rowcntwrk][0]) ?>"<?php echo $selwrk ?>>
+<?php echo $arwrk[$rowcntwrk][1] ?>
+</option>
+<?php
+	}
+}
+?>
+</select>
+</span>
+<?php echo $contact->sex->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 </div>
