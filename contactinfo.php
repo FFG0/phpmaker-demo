@@ -11,6 +11,7 @@ class ccontact extends cTable {
 	var $name;
 	var $lastname;
 	var $status;
+	var $sex;
 
 	//
 	// Table class constructor
@@ -55,6 +56,11 @@ class ccontact extends cTable {
 		$this->status = new cField('contact', 'contact', 'x_status', 'status', '`status`', '`status`', 3, -1, FALSE, '`status`', FALSE, FALSE, FALSE, 'FORMATTED TEXT');
 		$this->status->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['status'] = &$this->status;
+
+		// sex
+		$this->sex = new cField('contact', 'contact', 'x_sex', 'sex', '`sex`', '`sex`', 3, -1, FALSE, '`sex`', FALSE, FALSE, FALSE, 'FORMATTED TEXT');
+		$this->sex->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
+		$this->fields['sex'] = &$this->sex;
 	}
 
 	// Single column sort
@@ -533,6 +539,7 @@ class ccontact extends cTable {
 		$this->name->setDbValue($rs->fields('name'));
 		$this->lastname->setDbValue($rs->fields('lastname'));
 		$this->status->setDbValue($rs->fields('status'));
+		$this->sex->setDbValue($rs->fields('sex'));
 	}
 
 	// Render list row values
@@ -547,8 +554,10 @@ class ccontact extends cTable {
 		// name
 		// lastname
 		// status
+		// sex
 		// id
 
+		$this->id->ViewValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
 
 		// name
@@ -560,8 +569,38 @@ class ccontact extends cTable {
 		$this->lastname->ViewCustomAttributes = "";
 
 		// status
-		$this->status->ViewValue = $this->status->CurrentValue;
+		if (strval($this->status->CurrentValue) <> "") {
+			switch ($this->status->CurrentValue) {
+				case $this->status->FldTagValue(1):
+					$this->status->ViewValue = $this->status->FldTagCaption(1) <> "" ? $this->status->FldTagCaption(1) : $this->status->CurrentValue;
+					break;
+				case $this->status->FldTagValue(2):
+					$this->status->ViewValue = $this->status->FldTagCaption(2) <> "" ? $this->status->FldTagCaption(2) : $this->status->CurrentValue;
+					break;
+				default:
+					$this->status->ViewValue = $this->status->CurrentValue;
+			}
+		} else {
+			$this->status->ViewValue = NULL;
+		}
 		$this->status->ViewCustomAttributes = "";
+
+		// sex
+		if (strval($this->sex->CurrentValue) <> "") {
+			switch ($this->sex->CurrentValue) {
+				case $this->sex->FldTagValue(1):
+					$this->sex->ViewValue = $this->sex->FldTagCaption(1) <> "" ? $this->sex->FldTagCaption(1) : $this->sex->CurrentValue;
+					break;
+				case $this->sex->FldTagValue(2):
+					$this->sex->ViewValue = $this->sex->FldTagCaption(2) <> "" ? $this->sex->FldTagCaption(2) : $this->sex->CurrentValue;
+					break;
+				default:
+					$this->sex->ViewValue = $this->sex->CurrentValue;
+			}
+		} else {
+			$this->sex->ViewValue = NULL;
+		}
+		$this->sex->ViewCustomAttributes = "";
 
 		// id
 		$this->id->LinkCustomAttributes = "";
@@ -583,6 +622,11 @@ class ccontact extends cTable {
 		$this->status->HrefValue = "";
 		$this->status->TooltipValue = "";
 
+		// sex
+		$this->sex->LinkCustomAttributes = "";
+		$this->sex->HrefValue = "";
+		$this->sex->TooltipValue = "";
+
 		// Call Row Rendered event
 		$this->Row_Rendered();
 	}
@@ -597,6 +641,7 @@ class ccontact extends cTable {
 		// id
 		$this->id->EditAttrs["class"] = "form-control";
 		$this->id->EditCustomAttributes = "";
+		$this->id->EditValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
 
 		// name
@@ -614,8 +659,20 @@ class ccontact extends cTable {
 		// status
 		$this->status->EditAttrs["class"] = "form-control";
 		$this->status->EditCustomAttributes = "";
-		$this->status->EditValue = ew_HtmlEncode($this->status->CurrentValue);
-		$this->status->PlaceHolder = ew_RemoveHtml($this->status->FldCaption());
+		$arwrk = array();
+		$arwrk[] = array($this->status->FldTagValue(1), $this->status->FldTagCaption(1) <> "" ? $this->status->FldTagCaption(1) : $this->status->FldTagValue(1));
+		$arwrk[] = array($this->status->FldTagValue(2), $this->status->FldTagCaption(2) <> "" ? $this->status->FldTagCaption(2) : $this->status->FldTagValue(2));
+		array_unshift($arwrk, array("", $Language->Phrase("PleaseSelect")));
+		$this->status->EditValue = $arwrk;
+
+		// sex
+		$this->sex->EditAttrs["class"] = "form-control";
+		$this->sex->EditCustomAttributes = "";
+		$arwrk = array();
+		$arwrk[] = array($this->sex->FldTagValue(1), $this->sex->FldTagCaption(1) <> "" ? $this->sex->FldTagCaption(1) : $this->sex->FldTagValue(1));
+		$arwrk[] = array($this->sex->FldTagValue(2), $this->sex->FldTagCaption(2) <> "" ? $this->sex->FldTagCaption(2) : $this->sex->FldTagValue(2));
+		array_unshift($arwrk, array("", $Language->Phrase("PleaseSelect")));
+		$this->sex->EditValue = $arwrk;
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -648,11 +705,13 @@ class ccontact extends cTable {
 					if ($this->name->Exportable) $Doc->ExportCaption($this->name);
 					if ($this->lastname->Exportable) $Doc->ExportCaption($this->lastname);
 					if ($this->status->Exportable) $Doc->ExportCaption($this->status);
+					if ($this->sex->Exportable) $Doc->ExportCaption($this->sex);
 				} else {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
 					if ($this->name->Exportable) $Doc->ExportCaption($this->name);
 					if ($this->lastname->Exportable) $Doc->ExportCaption($this->lastname);
 					if ($this->status->Exportable) $Doc->ExportCaption($this->status);
+					if ($this->sex->Exportable) $Doc->ExportCaption($this->sex);
 				}
 				$Doc->EndExportRow();
 			}
@@ -688,11 +747,13 @@ class ccontact extends cTable {
 						if ($this->name->Exportable) $Doc->ExportField($this->name);
 						if ($this->lastname->Exportable) $Doc->ExportField($this->lastname);
 						if ($this->status->Exportable) $Doc->ExportField($this->status);
+						if ($this->sex->Exportable) $Doc->ExportField($this->sex);
 					} else {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
 						if ($this->name->Exportable) $Doc->ExportField($this->name);
 						if ($this->lastname->Exportable) $Doc->ExportField($this->lastname);
 						if ($this->status->Exportable) $Doc->ExportField($this->status);
+						if ($this->sex->Exportable) $Doc->ExportField($this->sex);
 					}
 					$Doc->EndExportRow();
 				}

@@ -750,6 +750,7 @@ class ccontact_list extends ccontact {
 			$this->UpdateSort($this->name); // name
 			$this->UpdateSort($this->lastname); // lastname
 			$this->UpdateSort($this->status); // status
+			$this->UpdateSort($this->sex); // sex
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -786,6 +787,7 @@ class ccontact_list extends ccontact {
 				$this->name->setSort("");
 				$this->lastname->setSort("");
 				$this->status->setSort("");
+				$this->sex->setSort("");
 			}
 
 			// Reset start position
@@ -1127,6 +1129,7 @@ class ccontact_list extends ccontact {
 		$this->name->setDbValue($rs->fields('name'));
 		$this->lastname->setDbValue($rs->fields('lastname'));
 		$this->status->setDbValue($rs->fields('status'));
+		$this->sex->setDbValue($rs->fields('sex'));
 	}
 
 	// Load DbValue from recordset
@@ -1137,6 +1140,7 @@ class ccontact_list extends ccontact {
 		$this->name->DbValue = $row['name'];
 		$this->lastname->DbValue = $row['lastname'];
 		$this->status->DbValue = $row['status'];
+		$this->sex->DbValue = $row['sex'];
 	}
 
 	// Load old record
@@ -1182,10 +1186,12 @@ class ccontact_list extends ccontact {
 		// name
 		// lastname
 		// status
+		// sex
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
 			// id
+			$this->id->ViewValue = $this->id->CurrentValue;
 			$this->id->ViewCustomAttributes = "";
 
 			// name
@@ -1197,8 +1203,38 @@ class ccontact_list extends ccontact {
 			$this->lastname->ViewCustomAttributes = "";
 
 			// status
-			$this->status->ViewValue = $this->status->CurrentValue;
+			if (strval($this->status->CurrentValue) <> "") {
+				switch ($this->status->CurrentValue) {
+					case $this->status->FldTagValue(1):
+						$this->status->ViewValue = $this->status->FldTagCaption(1) <> "" ? $this->status->FldTagCaption(1) : $this->status->CurrentValue;
+						break;
+					case $this->status->FldTagValue(2):
+						$this->status->ViewValue = $this->status->FldTagCaption(2) <> "" ? $this->status->FldTagCaption(2) : $this->status->CurrentValue;
+						break;
+					default:
+						$this->status->ViewValue = $this->status->CurrentValue;
+				}
+			} else {
+				$this->status->ViewValue = NULL;
+			}
 			$this->status->ViewCustomAttributes = "";
+
+			// sex
+			if (strval($this->sex->CurrentValue) <> "") {
+				switch ($this->sex->CurrentValue) {
+					case $this->sex->FldTagValue(1):
+						$this->sex->ViewValue = $this->sex->FldTagCaption(1) <> "" ? $this->sex->FldTagCaption(1) : $this->sex->CurrentValue;
+						break;
+					case $this->sex->FldTagValue(2):
+						$this->sex->ViewValue = $this->sex->FldTagCaption(2) <> "" ? $this->sex->FldTagCaption(2) : $this->sex->CurrentValue;
+						break;
+					default:
+						$this->sex->ViewValue = $this->sex->CurrentValue;
+				}
+			} else {
+				$this->sex->ViewValue = NULL;
+			}
+			$this->sex->ViewCustomAttributes = "";
 
 			// id
 			$this->id->LinkCustomAttributes = "";
@@ -1219,6 +1255,11 @@ class ccontact_list extends ccontact {
 			$this->status->LinkCustomAttributes = "";
 			$this->status->HrefValue = "";
 			$this->status->TooltipValue = "";
+
+			// sex
+			$this->sex->LinkCustomAttributes = "";
+			$this->sex->HrefValue = "";
+			$this->sex->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1537,6 +1578,15 @@ $contact_list->ListOptions->Render("header", "left");
         </div></div></th>
 	<?php } ?>
 <?php } ?>		
+<?php if ($contact->sex->Visible) { // sex ?>
+	<?php if ($contact->SortUrl($contact->sex) == "") { ?>
+		<th data-name="sex"><div id="elh_contact_sex" class="contact_sex"><div class="ewTableHeaderCaption"><?php echo $contact->sex->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="sex"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $contact->SortUrl($contact->sex) ?>',1);"><div id="elh_contact_sex" class="contact_sex">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $contact->sex->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($contact->sex->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($contact->sex->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+        </div></div></th>
+	<?php } ?>
+<?php } ?>		
 <?php
 
 // Render list options (header, right)
@@ -1624,6 +1674,12 @@ $contact_list->ListOptions->Render("body", "left", $contact_list->RowCnt);
 		<td data-name="status"<?php echo $contact->status->CellAttributes() ?>>
 <span<?php echo $contact->status->ViewAttributes() ?>>
 <?php echo $contact->status->ListViewValue() ?></span>
+</td>
+	<?php } ?>
+	<?php if ($contact->sex->Visible) { // sex ?>
+		<td data-name="sex"<?php echo $contact->sex->CellAttributes() ?>>
+<span<?php echo $contact->sex->ViewAttributes() ?>>
+<?php echo $contact->sex->ListViewValue() ?></span>
 </td>
 	<?php } ?>
 <?php
